@@ -15,8 +15,11 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.vision.CameraSource;
@@ -25,19 +28,26 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Shopping extends AppCompatActivity {
+public class Shopping extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     SurfaceView cameraPreview;
-    EditText beacon,vin;
+   TextView amt,item_name, item_price;
     BarcodeDetector barcodeDetector;
     CameraSource cameraSource;
-    Button assign;
+    ImageView view_cart;
     Camera camera = Camera.open();
     static public  String beaconStr;
     private TextView scanInfo;
+    int quant;
+    String res;
+    String quantstr;
     final int RequestCameraPermissionID = 1001;
-
+    int i =0;
+    String item[] = new String[100];
+    int quants[] = new int[100];
+    double price[] = new double[100];
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         cameraPreview =  findViewById(R.id.camera_pre);
@@ -70,7 +80,29 @@ public class Shopping extends AppCompatActivity {
         Log.e("error",""+cameraPreview);
         scanInfo = findViewById(R.id.scan_info);
         // setCamFocusMode();
+        amt = findViewById(R.id.amt);
+        item_name = findViewById(R.id.item_name);
+        item_price = findViewById(R.id.item_price);
+        view_cart = findViewById(R.id.view_cart);
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        spinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
 
+        // Spinner Drop down elements
+        List<String> categories = new ArrayList<String>();
+        categories.add(" 1 ");
+        categories.add(" 2 ");
+        categories.add(" 3 ");
+        categories.add(" 4 ");
+        categories.add(" 5 ");
+
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // attaching data adapter to spinner
+        spinner.setAdapter(dataAdapter);
         barcodeDetector = new BarcodeDetector.Builder(this)
                 //  .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
@@ -126,39 +158,57 @@ public class Shopping extends AppCompatActivity {
 
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
+
                 final SparseArray<Barcode> qrcodes = detections.getDetectedItems();
                 if(qrcodes.size() != 0)
                 {
-                    beacon.post(new Runnable() {
+                    amt.post(new Runnable() {
                         @Override
                         public void run() {
                             cameraSource.stop( );
-                            Log.e("QR ",""+qrcodes.valueAt(0).displayValue);
-
-                            Log.e("Beacon ",""+beacon.getText().toString());
-
-                            Log.e("VIN ",""+vin.getText().toString());
-
-                            if(beacon.getText().toString().isEmpty()) {
+                                res = (qrcodes.valueAt(0).displayValue);
+                            if(res.equals("12345")) {
                                 Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                                 vibrator.vibrate(100);
-                                beacon.setText(qrcodes.valueAt(0).displayValue);
+                                item[i++] = "Gooodday Cookies" ;
+                                price[i++] = 20.00 ;
+                                quants[i++] = quant ;
+                                amt.setText("₹20.00");
+                                item_name.setText("Gooodday Cookies");
+                                item_price.setText("₹20.00");
                                 //vinAlert();
+
+                                restartCamera();
+                            }
+                            else if((qrcodes.valueAt(0).displayValue)=="12212") {
+                                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                vibrator.vibrate(100);
+                                item[i++] = "Parle Lays" ;
+                                price[i++] = 10.00 ;
+                                quants[i++] = quant ;
+
+                                item_name.setText("Parle Lays");
+                                item_price.setText("₹10.00");
+                                //vinAlert();
+
                                 restartCamera();
                             }
                             else {
-                                String s = qrcodes.valueAt(0).displayValue;
-                                if(!(s.equalsIgnoreCase(beacon.getText().toString()))){
-                                    Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                                    vibrator.vibrate(100);
-                                    vin.setText(s);
-                                }
-                                else{
-                                    //   Toast.makeText(ScanQR.this, "Please scan vehicle barcode", Toast.LENGTH_SHORT).show();
-                                    restartCamera();
-                                }
+                                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                vibrator.vibrate(100);
+                                item[i++] = "Parle Lays" ;
+                                price[i++] = 10.00 ;
+                                quants[i++] = quant ;
+
+                                item_name.setText("Parle Lays");
+                                item_price.setText("₹10.00");
+                                //vinAlert();
+
+                                restartCamera();
                             }
 
+
+                            i++;
 
 
                         }
@@ -203,5 +253,20 @@ public class Shopping extends AppCompatActivity {
         }
 
         camera.setParameters(parameters);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int i, long l) {
+        // On selecting a spinner item
+         quantstr = parent.getItemAtPosition(i).toString();
+        int result = Integer.parseInt(quantstr);
+        System.out.println(result);
+        // Showing selected spinner item
+       // Toast.makeText(parent.getContext(), "Sesslected: " + quant, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }
