@@ -90,11 +90,11 @@ public class Shopping extends AppCompatActivity implements AdapterView.OnItemSel
 
         // Spinner Drop down elements
         List<String> categories = new ArrayList<String>();
-        categories.add(" 1 ");
-        categories.add(" 2 ");
-        categories.add(" 3 ");
-        categories.add(" 4 ");
-        categories.add(" 5 ");
+        categories.add("1");
+        categories.add("2");
+        categories.add("3");
+        categories.add("4");
+        categories.add("5");
 
         // Creating adapter for spinner
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
