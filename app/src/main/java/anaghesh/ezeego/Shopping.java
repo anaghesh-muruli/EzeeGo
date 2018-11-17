@@ -40,9 +40,10 @@ public class Shopping extends AppCompatActivity implements AdapterView.OnItemSel
     Camera camera = Camera.open();
     static public  String beaconStr;
     private TextView scanInfo;
-    int quant;
+    int quant=1;
     String res;
     String quantstr;
+    double total_amt = 0;
     final int RequestCameraPermissionID = 1001;
     int i =0;
     String item[] = new String[100];
@@ -112,6 +113,7 @@ public class Shopping extends AppCompatActivity implements AdapterView.OnItemSel
                 .build();
         //Add Event
         //alert();
+
         cameraPreview.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
@@ -173,20 +175,23 @@ public class Shopping extends AppCompatActivity implements AdapterView.OnItemSel
                                 item[i++] = "Gooodday Cookies" ;
                                 price[i++] = 20.00 ;
                                 quants[i++] = quant ;
-                                amt.setText("₹20.00");
+                                total_amt = total_amt + quant * 20.00;
+                                i++;
+                                amt.setText("₹"+total_amt);
                                 item_name.setText("Gooodday Cookies");
                                 item_price.setText("₹20.00");
                                 //vinAlert();
 
                                 restartCamera();
                             }
-                            else if((qrcodes.valueAt(0).displayValue)=="12212") {
+                            else if(res.equals("12346")) {
                                 Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                                 vibrator.vibrate(100);
                                 item[i++] = "Parle Lays" ;
                                 price[i++] = 10.00 ;
-                                quants[i++] = quant ;
 
+                                quants[i++] = quant ;
+                                i++;
                                 item_name.setText("Parle Lays");
                                 item_price.setText("₹10.00");
                                 //vinAlert();
@@ -199,18 +204,13 @@ public class Shopping extends AppCompatActivity implements AdapterView.OnItemSel
                                 item[i++] = "Parle Lays" ;
                                 price[i++] = 10.00 ;
                                 quants[i++] = quant ;
-
+                                i++;
                                 item_name.setText("Parle Lays");
                                 item_price.setText("₹10.00");
                                 //vinAlert();
 
                                 restartCamera();
                             }
-
-
-                            i++;
-
-
                         }
                     });
 
@@ -259,8 +259,8 @@ public class Shopping extends AppCompatActivity implements AdapterView.OnItemSel
     public void onItemSelected(AdapterView<?> parent, View view, int i, long l) {
         // On selecting a spinner item
          quantstr = parent.getItemAtPosition(i).toString();
-        int result = Integer.parseInt(quantstr);
-        System.out.println(result);
+         quant = Integer.parseInt(quantstr);
+          amt.setText("₹"+total_amt);
         // Showing selected spinner item
        // Toast.makeText(parent.getContext(), "Sesslected: " + quant, Toast.LENGTH_LONG).show();
     }
